@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+![Go Version](https://img.shields.io/badge/Language-Go-blue)
+
 # 🕵️ go-sniffer
 A lightweight network packet sniffer written in Go.
 This tool captures network traffic in real-time, analyzes packets, and provides readable statistics, including IP-to-domain resolution and traffic details per host or connection.
@@ -53,7 +56,6 @@ git clone https://github.com/alexcfv/go-sniffer.git
 #### 2 Go into the project and install dependencies:
 
 ```cmd
-cd go-sniffer
 go mod tidy
 ```
 #### 3 Build the sniffer
