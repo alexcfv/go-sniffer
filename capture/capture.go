@@ -41,3 +41,22 @@ func (c *Capturer) Start() {
 		c.parser.Parse(packet)
 	}
 }
+
+func StartCapture(iface string) (*pcap.Handle, error) {
+	handle, err := pcap.OpenLive(iface, 1600, true, pcap.BlockForever)
+	if err != nil {
+		return nil, err
+	}
+	return handle, nil
+}
+
+type PacketParser interface {
+	Parse(gopacket.Packet)
+}
+
+func CapturePackets(handle *pcap.Handle, parser PacketParser) {
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for packet := range packetSource.Packets() {
+		parser.Parse(packet)
+	}
+}

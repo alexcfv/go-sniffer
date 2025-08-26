@@ -13,22 +13,32 @@ type Printer struct {
 	stats *stats.Stats
 }
 
-func NewPrinter(stats *stats.Stats) *Printer {
-	return &Printer{stats: stats}
+func NewPrinter(s *stats.Stats) *Printer {
+	return &Printer{stats: s}
 }
 
-func (p *Printer) Print() {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "CATEGORY\tCOUNT")
-	fmt.Fprintf(w, "Total Packets\t%d\n", p.stats.TotalPackets)
-	fmt.Fprintf(w, "Total Bytes\t%d\n", p.stats.TotalBytes)
-	fmt.Fprintf(w, "TCP\t%d\n", p.stats.TCPCount)
-	fmt.Fprintf(w, "UDP\t%d\n", p.stats.UDPCount)
-	fmt.Fprintf(w, "ICMP\t%d\n", p.stats.ICMPCount)
-	fmt.Fprintf(w, "Other\t%d\n", p.stats.OtherCount)
-	w.Flush()
+func (p *Printer) PrintSummary() {
+	fmt.Println("\n=== Traffic Summary ===")
+	fmt.Printf("Total Packets: %d\n", p.stats.TotalPackets)
+	fmt.Printf("Total Bytes:   %d\n", p.stats.TotalBytes)
+	fmt.Printf("TCP:           %d\n", p.stats.TCPCount)
+	fmt.Printf("UDP:           %d\n", p.stats.UDPCount)
+	fmt.Printf("ICMP:          %d\n", p.stats.ICMPCount)
+	fmt.Printf("Other:         %d\n", p.stats.OtherCount)
+}
 
-	fmt.Println("\nTraffic by IP pairs:")
+func (p *Printer) PrintIPs() {
+	fmt.Println("\n=== IP/Domain Stats ===")
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "IP/Domain\tPackets")
+	for ip, count := range p.stats.IPStats {
+		fmt.Fprintf(w, "%s\t%d\n", ip, count)
+	}
+	w.Flush()
+}
+
+func (p *Printer) PrintSrcToDst() {
+	fmt.Println("\n=== Traffic by IP pairs ===")
 	traffic := p.stats.GetTraffic()
 
 	type kv struct {
@@ -43,7 +53,7 @@ func (p *Printer) Print() {
 		return sorted[i].Value > sorted[j].Value
 	})
 
-	w = tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(w, "SRC -> DST\tPACKETS")
 	for _, entry := range sorted {
 		fmt.Fprintf(w, "%s\t%d\n", entry.Key, entry.Value)

@@ -11,6 +11,7 @@ func main() {
 	iface := flag.String("i", "", "Network interface to capture packets")
 	filter := flag.String("f", "", "BPF filter")
 	duration := flag.Int("t", 0, "Capture duration in seconds (0=indefinite)")
+	resolve := flag.Bool("resolve", false, "Resolve IP addresses to domain names")
 	flag.Parse()
 
 	if *iface == "" {
@@ -21,6 +22,7 @@ func main() {
 		Interface: *iface,
 		Filter:    *filter,
 		Duration:  *duration,
+		Resolve:   *resolve,
 	}
 
 	s := sniffer.NewSniffer(cfg)
