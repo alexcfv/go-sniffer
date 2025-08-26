@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"go-sniffer/internal/stats"
+	"github.com/alexcfv/go-sniffer/stats"
 )
 
 type Printer struct {
