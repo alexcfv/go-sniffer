@@ -10,6 +10,7 @@ import (
 	"github.com/alexcfv/go-sniffer/capture"
 	"github.com/alexcfv/go-sniffer/output"
 	"github.com/alexcfv/go-sniffer/parser"
+	"github.com/alexcfv/go-sniffer/resolver"
 	"github.com/alexcfv/go-sniffer/stats"
 )
 
@@ -17,6 +18,7 @@ type SnifferConfig struct {
 	Interface string
 	Filter    string
 	Duration  int
+	Resolve   bool
 }
 
 type Sniffer struct {
@@ -24,12 +26,14 @@ type Sniffer struct {
 	statsCollector *stats.Stats
 	packetParser   *parser.Parser
 	capturer       *capture.Capturer
+	resolver       *resolver.Resolver
 	printer        *output.Printer
 }
 
 func NewSniffer(cfg SnifferConfig) *Sniffer {
 	statsCollector := stats.NewStats()
-	packetParser := parser.NewParser(statsCollector)
+	resolver := resolver.NewResolver()
+	packetParser := parser.NewParser(statsCollector, resolver, cfg.Resolve)
 	capturer := capture.NewCapturer(cfg.Interface, cfg.Filter, packetParser)
 	printer := output.NewPrinter(statsCollector)
 
@@ -38,6 +42,7 @@ func NewSniffer(cfg SnifferConfig) *Sniffer {
 		statsCollector: statsCollector,
 		packetParser:   packetParser,
 		capturer:       capturer,
+		resolver:       resolver,
 		printer:        printer,
 	}
 }
@@ -57,5 +62,7 @@ func (s *Sniffer) Run() {
 
 	<-stop
 	fmt.Println("\nCapture stopped. Summary:")
-	s.printer.Print()
+	s.printer.PrintSummary()
+	s.printer.PrintIPs()
+	s.printer.PrintSrcToDst()
 }
