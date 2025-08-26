@@ -1,4 +1,4 @@
-module go-sniffer
+module github.com/alexcfv/go-sniffer
 
 go 1.24.1
 

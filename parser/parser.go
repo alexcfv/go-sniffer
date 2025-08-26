@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"go-sniffer/internal/stats"
+	"github.com/alexcfv/go-sniffer/stats"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
