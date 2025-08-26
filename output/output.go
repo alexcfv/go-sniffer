@@ -59,7 +59,7 @@ func (p *Printer) PrintIPs() {
 	fmt.Println(strings.Repeat("-", maxIPLen+25))
 
 	for _, s := range stats {
-		fmt.Printf("%-*s  %-10d  %-10d\n", maxIPLen, s.IP, s.Packets, s.Bytes)
+		fmt.Printf("%-*s  %-10d  %-10s\n", maxIPLen, s.IP, s.Packets, humanBytes(s.Bytes))
 	}
 }
 
@@ -86,7 +86,7 @@ func (p *Printer) PrintSrcToDst() {
 		}
 	}
 
-	fmt.Printf("%-*s  %s\n", maxKeyLen, "SRC -> DST", "PACKETS")
+	fmt.Printf("%-*s  %s\n", maxKeyLen, "SRC:PORT -> DST:PORT", "PACKETS")
 	fmt.Println(strings.Repeat("-", maxKeyLen+10))
 	for _, entry := range sorted {
 		fmt.Printf("%-*s  %d\n", maxKeyLen, entry.Key, entry.Value)
