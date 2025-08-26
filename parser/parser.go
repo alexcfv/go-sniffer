@@ -2,7 +2,6 @@ package parser
 
 import (
 	"github.com/alexcfv/go-sniffer/stats"
-
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 )
@@ -19,6 +18,9 @@ func (p *Parser) Parse(packet gopacket.Packet) {
 	p.stats.IncrementPackets(len(packet.Data()))
 
 	if netLayer := packet.NetworkLayer(); netLayer != nil {
+		src, dst := netLayer.NetworkFlow().Endpoints()
+		p.stats.AddTraffic(src.String(), dst.String())
+
 		switch netLayer.LayerType() {
 		case layers.LayerTypeIPv4, layers.LayerTypeIPv6:
 			if transportLayer := packet.TransportLayer(); transportLayer != nil {
