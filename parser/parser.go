@@ -22,50 +22,70 @@ func NewParser(stats *stats.Stats, r *resolver.Resolver, doResolve bool) *Parser
 func (p *Parser) Parse(packet gopacket.Packet) {
 	p.stats.IncrementPackets(len(packet.Data()))
 
+	var srcIP, dstIP string
+	var srcPort, dstPort string
+	var label string
+
 	if netLayer := packet.NetworkLayer(); netLayer != nil {
 		switch ipLayer := netLayer.(type) {
 		case *layers.IPv4:
 			dst := ipLayer.DstIP
-			label := classifyIP(dst)
+			label = classifyIP(dst)
 			dstStr := dst.String()
 			if p.doResolve && isPublicIP(dst) {
 				dstStr = p.resolver.Resolve(dstStr)
 			}
 			p.stats.AddIPStats(fmt.Sprintf("[%s] %s", label, dstStr), len(packet.Data()))
+			srcIP = ipLayer.SrcIP.String()
+			dstIP = ipLayer.DstIP.String()
 
 		case *layers.IPv6:
 			dst := ipLayer.DstIP
-			label := classifyIP(dst)
+			label = classifyIP(dst)
 			dstStr := dst.String()
 			if p.doResolve && isPublicIP(dst) {
 				dstStr = p.resolver.Resolve(dstStr)
 			}
 			p.stats.AddIPStats(fmt.Sprintf("[%s] %s", label, dstStr), len(packet.Data()))
+			srcIP = ipLayer.SrcIP.String()
+			dstIP = ipLayer.DstIP.String()
 		}
 	}
 
-	if netLayer := packet.NetworkLayer(); netLayer != nil {
-		src, dst := netLayer.NetworkFlow().Endpoints()
-		p.stats.AddTraffic(src.String(), dst.String())
+	if transportLayer := packet.TransportLayer(); transportLayer != nil {
+		switch layer := transportLayer.(type) {
+		case *layers.TCP:
+			p.stats.IncrementTCP()
+			srcPort = fmt.Sprintf("%d", layer.SrcPort)
+			dstPort = fmt.Sprintf("%d", layer.DstPort)
 
-		switch netLayer.LayerType() {
-		case layers.LayerTypeIPv4, layers.LayerTypeIPv6:
-			if transportLayer := packet.TransportLayer(); transportLayer != nil {
-				switch transportLayer.LayerType() {
-				case layers.LayerTypeTCP:
-					p.stats.IncrementTCP()
-				case layers.LayerTypeUDP:
-					p.stats.IncrementUDP()
-				case layers.LayerTypeICMPv4, layers.LayerTypeICMPv6:
-					p.stats.IncrementICMP()
-				default:
-					p.stats.IncrementOther()
-				}
-			}
+		case *layers.UDP:
+			p.stats.IncrementUDP()
+			srcPort = fmt.Sprintf("%d", layer.SrcPort)
+			dstPort = fmt.Sprintf("%d", layer.DstPort)
+
 		default:
-			p.stats.IncrementOther()
+			if transportLayer.LayerType() == layers.LayerTypeICMPv4 || transportLayer.LayerType() == layers.LayerTypeICMPv6 {
+				p.stats.IncrementICMP()
+			} else {
+				p.stats.IncrementOther()
+			}
 		}
-	} else {
+	}
+
+	if packet.TransportLayer() == nil {
 		p.stats.IncrementOther()
+	}
+
+	src := srcIP
+	dst := dstIP
+	if srcPort != "" {
+		src = fmt.Sprintf("%s:%s", src, srcPort)
+	}
+	if dstPort != "" {
+		dst = fmt.Sprintf("%s:%s", dst, dstPort)
+	}
+	if src != "" && dst != "" {
+		p.stats.AddTraffic(src, dst)
 	}
 }

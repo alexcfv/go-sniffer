@@ -2,9 +2,8 @@ package output
 
 import (
 	"fmt"
-	"os"
 	"sort"
-	"text/tabwriter"
+	"strings"
 
 	"github.com/alexcfv/go-sniffer/stats"
 )
@@ -29,12 +28,39 @@ func (p *Printer) PrintSummary() {
 
 func (p *Printer) PrintIPs() {
 	fmt.Println("\n=== IP/Domain Stats ===")
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "IP/Domain\tPackets")
-	for ip, count := range p.stats.IPStats {
-		fmt.Fprintf(w, "%s\t%d\n", ip, count)
+
+	type stat struct {
+		IP      string
+		Packets int
+		Bytes   int
 	}
-	w.Flush()
+
+	var stats []stat
+	for ip, count := range p.stats.IPStats {
+		stats = append(stats, stat{
+			IP:      ip,
+			Packets: count.Packets,
+			Bytes:   count.Bytes,
+		})
+	}
+
+	sort.Slice(stats, func(i, j int) bool {
+		return stats[i].Packets > stats[j].Packets
+	})
+
+	maxIPLen := 0
+	for _, s := range stats {
+		if len(s.IP) > maxIPLen {
+			maxIPLen = len(s.IP)
+		}
+	}
+
+	fmt.Printf("%-*s  %-10s  %-10s\n", maxIPLen, "IP/Domain", "Packets", "Bytes")
+	fmt.Println(strings.Repeat("-", maxIPLen+25))
+
+	for _, s := range stats {
+		fmt.Printf("%-*s  %-10d  %-10d\n", maxIPLen, s.IP, s.Packets, s.Bytes)
+	}
 }
 
 func (p *Printer) PrintSrcToDst() {
@@ -53,10 +79,16 @@ func (p *Printer) PrintSrcToDst() {
 		return sorted[i].Value > sorted[j].Value
 	})
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "SRC -> DST\tPACKETS")
+	maxKeyLen := 0
 	for _, entry := range sorted {
-		fmt.Fprintf(w, "%s\t%d\n", entry.Key, entry.Value)
+		if len(entry.Key) > maxKeyLen {
+			maxKeyLen = len(entry.Key)
+		}
 	}
-	w.Flush()
+
+	fmt.Printf("%-*s  %s\n", maxKeyLen, "SRC -> DST", "PACKETS")
+	fmt.Println(strings.Repeat("-", maxKeyLen+10))
+	for _, entry := range sorted {
+		fmt.Printf("%-*s  %d\n", maxKeyLen, entry.Key, entry.Value)
+	}
 }
