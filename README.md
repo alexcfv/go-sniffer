@@ -46,7 +46,7 @@ The sniffer follows a pipeline-based design where each component focuses on a si
 ---
 
 ### 🚀 Getting Started
-#### if you have macos on intel as i, you can download binary in releases, because cross build don't work with pcap and cgo
+#### if you have macos on intel as i, you can download binary in releases, because cross compile don't work with pcap and cgo
 #### 1 Clon repo
 
 ```cmd
