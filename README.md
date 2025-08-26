@@ -47,12 +47,13 @@ The sniffer follows a pipeline-based design where each component focuses on a si
 #### 1 Clon repo
 
 ```cmd
-git clone 
+git clone https://github.com/alexcfv/go-sniffer.git
 ```
 
-#### 2 Install dependencies:
+#### 2 Go into the project and install dependencies:
 
 ```cmd
+cd go-sniffer
 go mod tidy
 ```
 #### 3 Build the sniffer
