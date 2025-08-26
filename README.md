@@ -80,7 +80,7 @@ sudo ./go-sniffer -i <interface> [options]
 | Flag        | Description                                          |
 | ----------- | ---------------------------------------------------- |
 | `-i string` | Network interface to capture packets (**required**)  |
-| `-f string` | Optional BPF filter (e.g. `tcp and port 80`)         |
+| `-f string` | Optional BPF filter (e.g. `tcp port 80`)         |
 | `-t int`    | Capture duration in seconds (`0` = run indefinitely) |
 | `-resolve`  | Enable IP → domain resolution                        |
 
