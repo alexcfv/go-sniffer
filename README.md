@@ -1,7 +1,11 @@
+# 🕵️ go-sniffer
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 ![Go Version](https://img.shields.io/badge/Language-Go-blue)
+[![CLI](https://img.shields.io/badge/type-CLI-blueviolet)](#)
+[![pcap](https://img.shields.io/badge/pcap-supported-orange)](#)
+[![Platform](https://img.shields.io/badge/platform-All-lightgrey)](#)
 
-# 🕵️ go-sniffer
 A lightweight network packet sniffer written in Go.
 This tool captures network traffic in real-time, analyzes packets, and provides readable statistics, including IP-to-domain resolution and traffic details per host or connection.
 
