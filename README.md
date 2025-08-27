@@ -12,13 +12,19 @@ This project is a simple and educational implementation of a sniffer that uses G
 ---
 
 ### ✨ Features
-#### 📡 Capture packets from a specified network interface
-#### 🎯 Support for BPF filters to capture only relevant packets
-#### ⏱️ Optional capture duration (or run indefinitely)
-#### 🌍 Reverse DNS lookups (resolve IP addresses to domain names)
-#### 📊 Display per-IP statistics: Number of packets sent/received Total bytes (formatted in KB/MB/GB)
-#### 🔗 Show source-to-destination traffic pairs for better network visibility
-#### ⚙️ Clean modular design with a focus on extensibility
+📡 Capture packets from a specified network interface
+
+🎯 Support for BPF filters to capture only relevant packets
+
+⏱️ Optional capture duration (or run indefinitely)
+
+🌍 Reverse DNS lookups (resolve IP addresses to domain names)
+
+📊 Display per-IP statistics: Number of packets sent/received Total bytes (formatted in KB/MB/GB)
+
+🔗 Show source-to-destination traffic pairs for better network visibility
+
+⚙️ Clean modular design with a focus on extensibility
 
 ---
 
@@ -38,15 +44,20 @@ The sniffer follows a pipeline-based design where each component focuses on a si
                      └──────────────┘
 ```
 
-#### Sniffer – Captures raw packets from the selected interface using gopacket.
-#### Resolver – Resolves IP addresses to domain names via reverse DNS lookups.
-#### Stats – Aggregates packet counts and total bytes.
-#### Printer – Displays sorted and human-readable network stats.
+Sniffer – Captures raw packets from the selected interface using gopacket.
+
+Resolver – Resolves IP addresses to domain names via reverse DNS lookups.
+
+Stats – Aggregates packet counts and total bytes.
+
+Printer – Displays sorted and human-readable network stats.
 
 ---
 
 ### 🚀 Getting Started
-#### if you have macos on intel as i, you can download binary in releases, because cross compile don't work with pcap and cgo
+
+if you have macos on intel as i, you can download binary in releases, because cross compile don't work with pcap and cgo
+
 #### 1 Clon repo
 
 ```cmd
